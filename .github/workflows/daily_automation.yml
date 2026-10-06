@@ -27,6 +27,8 @@ on:
 jobs:
   build-and-upload:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout Code
@@ -59,3 +61,24 @@ jobs:
           INPUT_LANG: ${{ github.event.inputs.lang }}
         run: |
           python cli_runner.py
+
+      - name: Commit and Push Video to Repo Output Folder
+        if: success()
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-generate video output [skip ci]"
+            git push
+          fi
+
+      - name: Upload Output Video as Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-short-video
+          path: output/
+          retention-days: 7
