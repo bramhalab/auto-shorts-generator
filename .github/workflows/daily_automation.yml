@@ -11,6 +11,10 @@ on:
         description: 'Custom Affiliate Link (Optional)'
         required: false
         default: ''
+      custom_script:
+        description: 'Custom Script Prompt/Text (Optional)'
+        required: false
+        default: ''
       lang:
         description: 'Language (hinglish/hindi/english)'
         required: false
@@ -33,7 +37,7 @@ jobs:
         with:
           python-version: '3.10'
 
-      # Fast & reliable FFmpeg installation (Option 2)
+      # Fast & reliable FFmpeg installation
       - name: Setup FFmpeg
         uses: FedericoCarboni/setup-ffmpeg@v3
         with:
@@ -51,6 +55,7 @@ jobs:
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           INPUT_TOPIC: ${{ github.event.inputs.topic }}
           INPUT_AFFILIATE: ${{ github.event.inputs.affiliate_link }}
+          INPUT_SCRIPT: ${{ github.event.inputs.custom_script }}
           INPUT_LANG: ${{ github.event.inputs.lang }}
         run: |
           python cli_runner.py
