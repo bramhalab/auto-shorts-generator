@@ -1,0 +1,6 @@
+requests
+google-generativeai
+groq
+ffmpeg-python
+pillow
+numpy
