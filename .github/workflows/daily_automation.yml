@@ -1,57 +1,44 @@
-name: Generate Shorts Video
+name: Generate and Zip Video Output
 
 on:
-  workflow_dispatch:
-    inputs:
-      topic:
-        description: 'Product Name or Topic (Optional)'
-        required: false
-        type: string
-      custom_script:
-        description: 'Custom Script Text (Optional - Overrides AI)'
-        required: false
-        type: string
-      affiliate_link:
-        description: 'Custom Affiliate Link (Optional)'
-        required: false
-        type: string
-      language:
-        description: 'Language (hinglish/hindi/english)'
-        required: false
-        default: 'hinglish'
-        type: string
+  workflow_dispatch: # Manual trigger ke liye
 
 jobs:
-  build-and-generate:
+  build-and-zip:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Install Dependencies
+      - name: Install FFmpeg and System Dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install google-generativeai requests gTTS moviepy
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
 
-      - name: Run Script Generator
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          INPUT_TOPIC: ${{ github.event.inputs.topic }}
-          INPUT_CUSTOM_SCRIPT: ${{ github.event.inputs.custom_script }}
-          INPUT_AFFILIATE_LINK: ${{ github.event.inputs.affiliate_link }}
-          INPUT_LANGUAGE: ${{ github.event.inputs.language }}
+      - name: Install Python Dependencies
         run: |
-          python script.py
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Upload Generated Video as Artifact
-        uses: actions/upload-artifact@v3
+      - name: Run Video Generation Script
+        run: |
+          # Apni main python script yahan run karein
+          python main.py
+
+      - name: Create Zip Archive of Output
+        run: |
+          # Output folder ko zip me compress kar rahe hain
+          mkdir -p output
+          zip -r generated_video_output.zip output/
+
+      - name: Upload Output Zip as Artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: output-video
-          path: output.mp4
+          name: video-output-zip
+          path: generated_video_output.zip
+          retention-days: 7
