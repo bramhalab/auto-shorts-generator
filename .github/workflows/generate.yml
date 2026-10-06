@@ -1,0 +1,44 @@
+name: Generate and Zip Video Output
+
+on:
+  workflow_dispatch: # Manual trigger ke liye
+
+jobs:
+  build-and-zip:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install FFmpeg and System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install Python Dependencies
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run Video Generation Script
+        run: |
+          # Apni main python script yahan run karein
+          python main.py
+
+      - name: Create Zip Archive of Output
+        run: |
+          # Output folder ko zip me compress kar rahe hain
+          mkdir -p output
+          zip -r generated_video_output.zip output/
+
+      - name: Upload Output Zip as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: video-output-zip
+          path: generated_video_output.zip
+          retention-days: 7
