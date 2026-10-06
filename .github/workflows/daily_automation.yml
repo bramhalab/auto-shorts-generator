@@ -59,3 +59,11 @@ jobs:
           INPUT_LANG: ${{ github.event.inputs.lang }}
         run: |
           python cli_runner.py
+
+      - name: Upload Output Video as Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-short-video
+          path: output/
+          retention-days: 7

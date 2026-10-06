@@ -27,8 +27,7 @@ jobs:
 
       - name: Run Video Generation Script
         run: |
-          # Apni main python script yahan run karein
-          python main.py
+          python cli_runner.py
 
       - name: Create Zip Archive of Output
         run: |
