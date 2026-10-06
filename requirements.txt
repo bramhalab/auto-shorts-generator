@@ -4,3 +4,4 @@ groq
 ffmpeg-python
 pillow
 numpy
+gTTS
