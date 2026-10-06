@@ -1,7 +1,16 @@
 name: Auto Shorts Generator
 
 on:
-  workflow_dispatch: # Actions tab se manually run karne ke liye
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: 'Short ka topic enter karein'
+        required: true
+        default: 'Motivation'
+      video_count:
+        description: 'Kitni videos banani hain'
+        required: false
+        default: '1'
   push:
     branches:
       - main
@@ -38,11 +47,10 @@ jobs:
         run: |
           mkdir -p output
 
-      # 6. Short Generator Script Run karna (Video Banane Ke Liye)
-      # Apne script ka sahi naam Yahan update karein (e.g., main.py ya generator.py)
+      # 6. Short Generator Script Run karna (Inputs ke saath)
       - name: Run Video Generator
         run: |
-          python main.py --output_dir output/
+          python main.py --topic "${{ github.event.inputs.topic }}" --count "${{ github.event.inputs.video_count }}" --output_dir output/
 
       # 7. Video ko Github Actions Artifacts me Upload karna (Direct Download Link)
       - name: Upload Generated Videos
