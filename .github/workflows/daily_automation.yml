@@ -1,57 +1,53 @@
-name: Generate Shorts Video
+name: Auto Shorts Generator
 
 on:
-  workflow_dispatch:
-    inputs:
-      topic:
-        description: 'Product Name or Topic (Optional)'
-        required: false
-        type: string
-      custom_script:
-        description: 'Custom Script Text (Optional - Overrides AI)'
-        required: false
-        type: string
-      affiliate_link:
-        description: 'Custom Affiliate Link (Optional)'
-        required: false
-        type: string
-      language:
-        description: 'Language (hinglish/hindi/english)'
-        required: false
-        default: 'hinglish'
-        type: string
+  workflow_dispatch: # Actions tab se manually run karne ke liye
+  push:
+    branches:
+      - main
 
 jobs:
   build-and-generate:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      # 1. Repository checkout
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
+      # 2. Python Setup
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Install Dependencies
+      # 3. System Dependencies (FFmpeg)
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      # 4. Python Dependencies Install karna
+      - name: Install Python Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install google-generativeai requests gTTS moviepy
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Run Script Generator
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          INPUT_TOPIC: ${{ github.event.inputs.topic }}
-          INPUT_CUSTOM_SCRIPT: ${{ github.event.inputs.custom_script }}
-          INPUT_AFFILIATE_LINK: ${{ github.event.inputs.affiliate_link }}
-          INPUT_LANGUAGE: ${{ github.event.inputs.language }}
+      # 5. Output Directory Create karna
+      - name: Create Output Directory
         run: |
-          python script.py
+          mkdir -p output
 
-      - name: Upload Generated Video as Artifact
+      # 6. Short Generator Script Run karna (Video Banane Ke Liye)
+      # Apne script ka sahi naam Yahan update karein (e.g., main.py ya generator.py)
+      - name: Run Video Generator
+        run: |
+          python main.py --output_dir output/
+
+      # 7. Video ko Github Actions Artifacts me Upload karna (Direct Download Link)
+      - name: Upload Generated Videos
         uses: actions/upload-artifact@v4
         with:
-          name: output-video
-          path: output.mp4
+          name: generated-shorts-video
+          path: output/
+          retention-days: 7
