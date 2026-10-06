@@ -11,6 +11,7 @@ from state import log_campaign_state
 def main():
     topic = os.getenv("INPUT_TOPIC", "")
     affiliate_link = os.getenv("INPUT_AFFILIATE", "")
+    custom_script = os.getenv("INPUT_SCRIPT", "") or os.getenv("INPUT_CUSTOM_SCRIPT", "")
     lang = os.getenv("INPUT_LANG", "hinglish")
     mode = "product" if topic else "auto"
 
@@ -20,7 +21,7 @@ def main():
     deal_info = fetch_trending_deals(mode=mode, topic=topic, affiliate_link=affiliate_link)
     
     # 2. Script Generation
-    script_json = generate_comedy_script(deal_info, lang=lang)
+    script_json = generate_comedy_script(deal_info, lang=lang, custom_script=custom_script)
     
     # 3. Voice Generation
     audio_files = generate_voice_over(script_json['scenes'])

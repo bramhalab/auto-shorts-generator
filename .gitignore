@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+temp_audio/
+temp_media/
+temp_render/
+temp_sfx/
+output/
+logs/
+generated_script.json
