@@ -25,7 +25,7 @@ def main():
     # 3. Voice Generation
     audio_files = generate_voice_over(script_json['scenes'])
     
-    # 4. Media Assets
+    # 4. Media Assets (Unsplash / Direct Fetch - No Pexels API Key Needed)
     media_assets = fetch_product_media(script_json['scenes'], deal_info)
     
     # 5. SFX & Background Music
